@@ -1,10 +1,12 @@
 const path = require("path");
 const express = require("express");
-const { randomBytes } = require("crypto");
+const app = express();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 
 const PORT = process.env.PORT || 3001;
 
-const app = express();
+// EXPRESS
 
 app.use(express.static(path.resolve(__dirname, "../client/build")));
 
@@ -20,6 +22,27 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 });
 
-app.listen(PORT, () => {
+// SOCKET.IO
+
+let user = 0;
+
+io.on("connection", (socket) => {
+  user++;
+  console.log("Connection", `User : ${user}`);
+  io.emit("user", { user });
+
+  socket.on("disconnect", () => {
+    user--;
+    console.log(user);
+    io.emit("user", { user });
+  });
+
+  socket.on("messaging", ({ message }) => {
+    io.emit("new message", { data: message });
+    console.log(message);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Server listening on port : ${PORT}`);
 });

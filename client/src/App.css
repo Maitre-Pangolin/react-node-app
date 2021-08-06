@@ -4,10 +4,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 50vh;
 }
 
 .letter-container {
   display: flex;
   white-space: nowrap;
+}
+
+.chat-container {
+  width: fit-content;
+  margin: auto;
 }
